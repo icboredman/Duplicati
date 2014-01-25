@@ -120,6 +120,18 @@ namespace Duplicati.Library.Backend
                 m_options[INITIALPASSWORD] = initialPwd;
             if (!string.IsNullOrEmpty(m_uiAction))
                 m_options.Add(DUPLICATI_ACTION_MARKER, m_uiAction);
+
+            if (chboxWakeupRemote.Checked)
+            {
+                if (m_options.ContainsKey(SSH.WAKEUP_REMOTE_MAC_OPTION))
+                    m_options[SSH.WAKEUP_REMOTE_MAC_OPTION] = tboxRemoteMAC.Text;
+                else
+                    m_options.Add(SSH.WAKEUP_REMOTE_MAC_OPTION, tboxRemoteMAC.Text);
+            }
+            else
+            {
+                m_options.Remove(SSH.WAKEUP_REMOTE_MAC_OPTION);
+            }
         }
 
         void SSHUI_PageLoad(object sender, EventArgs args)
@@ -181,6 +193,19 @@ namespace Duplicati.Library.Backend
             }
 
             m_options.TryGetValue(DUPLICATI_ACTION_MARKER, out m_uiAction);
+
+            if (m_options.ContainsKey(SSH.WAKEUP_REMOTE_MAC_OPTION))
+            {
+                chboxWakeupRemote.Checked = true;
+                tboxRemoteMAC.Enabled = true;
+                tboxRemoteMAC.Text = m_options[SSH.WAKEUP_REMOTE_MAC_OPTION];
+                btnWakeupRemote.Enabled = true;
+            }
+            else
+            {
+                tboxRemoteMAC.Enabled = false;
+                btnWakeupRemote.Enabled = false;
+            }
         }
 
         private void TestConnection_Click(object sender, EventArgs e)
@@ -432,6 +457,18 @@ namespace Duplicati.Library.Backend
                     commandlineOptions[SSH.SSH_KEYFILE_OPTION] = guiOptions[SSH_KEYFILE];
             }
 
+            if (guiOptions.ContainsKey(SSH.WAKEUP_REMOTE_MAC_OPTION))
+            {
+                if (commandlineOptions.ContainsKey(SSH.WAKEUP_REMOTE_MAC_OPTION))
+                    commandlineOptions[SSH.WAKEUP_REMOTE_MAC_OPTION] = guiOptions[SSH.WAKEUP_REMOTE_MAC_OPTION];
+                else
+                    commandlineOptions.Add(SSH.WAKEUP_REMOTE_MAC_OPTION, guiOptions[SSH.WAKEUP_REMOTE_MAC_OPTION]);
+            }
+            else
+            {
+                commandlineOptions.Remove(SSH.WAKEUP_REMOTE_MAC_OPTION);
+            }
+
             if (!guiOptions.ContainsKey(HOST))
                 throw new Exception(string.Format(Interface.CommonStrings.ConfigurationIsMissingItemError, HOST));
 
@@ -499,6 +536,17 @@ namespace Duplicati.Library.Backend
         private void Keyfile_TextChanged(object sender, EventArgs e)
         {
             m_hasTested = false;
+        }
+
+        private void chboxWakeupRemote_CheckedChanged(object sender, EventArgs e)
+        {
+            tboxRemoteMAC.Enabled = chboxWakeupRemote.Checked;
+            btnWakeupRemote.Enabled = chboxWakeupRemote.Checked;
+        }
+
+        private void btnWakeupRemote_Click(object sender, EventArgs e)
+        {
+            SSH.WakeUpRemote(tboxRemoteMAC.Text);
         }
     }
 }

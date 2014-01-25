@@ -1,6 +1,7 @@
 @echo off
 SET PARAFFIN_EXE=%CD%\paraffin.exe
 SET ORIGIN_PATH=%CD%
+SET WIXPATH=C:\Program Files (x86)\WiX Toolset v3.8\bin
 
 if exist "%PARAFFIN_EXE%" goto paraffin_found
 echo *****************************************************
