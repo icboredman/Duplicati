@@ -1,0 +1,3 @@
+#script to shutdown if no connection to any workstation:
+# (replace {username} with actual user folder name)
+* * * * * /home/{user}/keepawake.sh
